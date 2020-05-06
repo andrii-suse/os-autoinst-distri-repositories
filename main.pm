@@ -23,6 +23,7 @@ $testapi::password //= 'nots3cr3t';
 
 autotest::loadtest 'tests/boot.pm';
 autotest::loadtest 'tests/firstrun.pm';
-autotest::loadtest 'tests/repoblender.pm';
+autotest::loadtest 'tests/repoblender_install.pm';
+autotest::loadtest 'tests/repoblender_environs.pm';
 
 1;

@@ -20,22 +20,33 @@ use testapi;
 sub test_repoblender {
     my $project    = get_required_var('PROJECT');
     my $repository = get_required_var('REPOSITORY');
-    my $configure  = <<"EOF";
+    my $configure = <<"EOF";
 zypper -n in git-core wget tar m4
+cd /
+mkdir /testing
+EOF
+    assert_script_run($_, timeout => 400) foreach (split /\n/, $configure);
+
+    $configure = <<"EOL";
+setfacl -d -m g::rx /testing
+setfacl -d -m o::rx /testing
+setfacl -m g::r /testing
+setfacl -m o::r /testing
+cd /testing
+chmod 755 /testing
+ls -la
 git clone https://github.com/andrii-suse/repoblender
+ls -la
 cd repoblender
 scripts/setup_repo_environ.sh $project $repository
-$project/$repository/wget.sh
-$project/$repository/test-install-all.sh
-EOF
-    assert_script_run($_, timeout => 300) foreach (split /\n/, $configure);
+EOL
+    assert_script_run($_, timeout => 800) foreach (split /\n/, $configure);
     wait_still_screen;
+    save_screenshot;
 }
 
 sub run {
     send_key "ctrl-alt-f3";
-#    type_string "clear\n";
-#    assert_screen "root-console";
     assert_screen "linux-login";
     type_string "root\n";
     assert_screen "password-prompt";
